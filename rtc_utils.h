@@ -12,9 +12,9 @@ bool rtc_write(T* data, uint8_t offset = 0, uint32_t* _crc = nullptr) {
     return 1;
 }
 
-// прочитать данные из rtc памяти. Вернёт false при ошибке
+// прочитать данные из rtc памяти. Вернёт 0 при ошибке, 1 если данные прочитаны, 2 если это первый запуск (данные сброшены)
 template <typename T>
-bool rtc_read(T* data, uint8_t offset = 0) {
+uint8_t rtc_read(T* data, uint8_t offset = 0) {
 #ifdef ESP8266
     uint32_t crc;
     if (!ESP.rtcUserMemoryRead(offset, &crc, sizeof(crc))) return 0;
@@ -22,7 +22,7 @@ bool rtc_read(T* data, uint8_t offset = 0) {
     uint32_t _crc = crc32((void*)data, sizeof(T));
     if (_crc != crc) {
         *data = T();
-        return rtc_write(data, offset, &_crc);
+        return rtc_write(data, offset, &_crc) ? 2 : 1;
     }
 #endif
     return 1;
