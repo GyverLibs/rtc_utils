@@ -16,6 +16,12 @@ bool rtc_write(T* data, uint8_t offset = 0, uint32_t* _crc = nullptr) {
     return 1;
 }
 
+// размер данных в количестве блоков (включая crc32)
+template <typename T>
+size_t rtc_size(T* data) {
+    return (sizeof(T) + 4 - 1) / 4 + 1;
+}
+
 // прочитать данные из rtc памяти. Вернёт 0 при ошибке, 1 если данные прочитаны, 2 если это первый запуск (данные сброшены)
 template <typename T>
 uint8_t rtc_read(T* data, uint8_t offset = 0) {
@@ -25,7 +31,7 @@ uint8_t rtc_read(T* data, uint8_t offset = 0) {
     uint32_t _crc = crc32((void*)data, sizeof(T));
     if (_crc != crc) {
         *data = T();
-        return rtc_write(data, offset, &_crc) ? RTCU_RESET : RTCU_READ;
+        return rtc_write(data, offset, &_crc) ? RTCU_RESET : RTCU_ERROR;
     }
     return RTCU_READ;
 }
