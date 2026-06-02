@@ -1,82 +1,113 @@
-This is an automatic translation, may be incorrect in some places. See sources and examples!
+This is an automatic translation and may be incorrect in some places. See the source README and examples for authoritative information.
+
+[![latest](https://img.shields.io/github/v/release/GyverLibs/rtc_utils.svg?color=brightgreen)](https://github.com/GyverLibs/rtc_utils/releases/latest/download/rtc_utils.zip)
+[![PIO](https://badges.registry.platformio.org/packages/gyverlibs/library/rtc_utils.svg)](https://registry.platformio.org/libraries/gyverlibs/rtc_utils)
+[![Foo](https://img.shields.io/badge/Website-AlexGyver.ru-blue.svg?style=flat-square)](https://alexgyver.ru/)
+[![Foo](https://img.shields.io/badge/%E2%82%BD%24%E2%82%AC%20%D0%9F%D0%BE%D0%B4%D0%B4%D0%B5%D1%80%D0%B6%D0%B0%D1%82%D1%8C-%D0%B0%D0%B2%D1%82%D0%BE%D1%80%D0%B0-orange.svg?style=flat-square)](https://alexgyver.ru/support_alex/)
+[![Foo](https://img.shields.io/badge/README-ENGLISH-blueviolet.svg?style=flat-square)](https://github-com.translate.goog/GyverLibs/rtc_utils?_x_tr_sl=ru&_x_tr_tl=en)  
+
+[![Foo](https://img.shields.io/badge/ПОДПИСАТЬСЯ-НА%20ОБНОВЛЕНИЯ-brightgreen.svg?style=social&logo=telegram&color=blue)](https://t.me/GyverLibs)
 
 # rtc_utils
-Wrapping for more convenient use of RTC memory on ESP8266
-- Reading and recording
-- CRC32 control
+Wrapper for easier use of RTC memory on esp8266
+- Reading and writing
+- Control crc32
 
-## compatibility
-ESP8266
+### Compatibility
+esp8266
 
-## Content
-- [use] (#usage)
-- [versions] (#varsions)
-- [installation] (# Install)
-- [bugs and feedback] (#fedback)
+## Contents
+- [Use of use](#usage)
+- [Versions](#versions)
+- [Installation](#install)
+- [Bugs and feedback](#feedback)
 
-<a id="usage"> </a>
+<a id="usage"></a>
 
-## Usage
-`` `CPP
-// Record data in RTC memory.Will return FALSE with an error
-Bool RTC_Write (T* DATA, UINT8_T OFFSET = 0);
+## Use of use
+```cpp
+// write data to rtc memory. Returns false if you make a mistake
+bool rtc_write(T* data, uint8_t offset = 0);
 
-// Read data from RTC memory.Will return FALSE with an error
-Bool RTC_read (T* DATA, UINT8_T OFFSET = 0);
-`` `
+// Read the data from the rtc memory. Returns 0 in error, 1 if the data is read, 2 if it is the first run (data reset)
+uint8_t rtc_read(T* data, uint8_t offset = 0);
 
-- maximum `offseet` - 128, one unit - 4 memory of memory
-- The library is preparing 4 bytes of CRC in the beginning of the region, we take this into account when calculating displacements for other data
-- you can store any data (structures, arrays)
+// Data size in number of blocks (including crc32)
+size_t rtc_size(T* data);
+```
+
+- maximum`offset`- 127, one unit - 4 bytes of memory
+- The library adds 4 bytes of crc to the beginning of the area, we take this into account when calculating offsets for other data.
+- You can store any data that has a designer (basic types, classes, structures)
+
+> If you need to store the array - wrap it in a structure!
 
 ### Examples
-`` `CPP
-// Microcontroller rebooting counter
+```cpp
+// microcontroller
 
-VOID setup () {
-Uint16_T Count = 0;
-RTC_Read (& Count);
+void setup() {
+    uint16_t count = 0;
+    rtc_read(&count);
 
-Serial.println (Count);
+    Serial.println(count);
 
-Count ++;
-RTC_WRITE (& COUNT);
+    count++;
+    rtc_write(&count);
 }
-`` `
+```
 
-<a id="versions"> </a>
+```cpp
+// same, but with an array.
 
-## versions
-- V1.0
+struct Data {
+    int arr[10];
+};
 
-<a id="install"> </a>
+void setup() {
+    Data data;
+    rtc_read(&data);
+
+    Serial.println(data.arr[0]);
+
+    data.arr[0]++;
+    rtc_write(&data);
+}
+```
+
+<a id="versions"></a>
+
+## Versions
+- v1.0
+
+<a id="install"></a>
 ## Installation
-- The library can be found by the name ** rtc_utils ** and installed through the library manager in:
-- Arduino ide
-- Arduino ide v2
-- Platformio
-- [download the library] (https://github.com/gyverlibs/rtc_utils/archive/refs/heads/main.zip) .Zip archive for manual installation:
-- unpack and put in * C: \ Program Files (X86) \ Arduino \ Libraries * (Windows X64)
-- unpack and put in * C: \ Program Files \ Arduino \ Libraries * (Windows X32)
-- unpack and put in *documents/arduino/libraries/ *
-- (Arduino id) Automatic installation from. Zip: * sketch/connect the library/add .Zip library ... * and specify downloaded archive
-- Read more detailed instructions for installing libraries [here] (https://alexgyver.ru/arduino-first/#%D0%A3%D1%81%D1%82%D0%B0%BD%D0%BE%BE%BE%BED0%B2%D0%BA%D0%B0_%D0%B1%D0%B8%D0%B1%D0%BB%D0%B8%D0%BE%D1%82%D0%B5%D0%BA)
+- The library can be found under the name **rtc utils** and installed through the library manager in:
+    - Arduino IDE
+    - Arduino IDE v2
+    - PlatformIO
+- [Download the library](https://github.com/GyverLibs/rtc_utils/archive/refs/heads/main.zip).zip archive for manual installation:
+    - Unpack and put in *C:\Program Files (x86)\Arduino\libraries* (Windows x64)
+    - Unpack and put in *C:\Program Files\Arduino\libraries* (Windows x32)
+    - Unpack and put in *Documents/Arduino/libraries/ *
+    - (Arduino IDE) Automatic installation from .zip: *Sketch/Connect library/Add .ZIP library...* and specify downloaded archive
+- Read more detailed instructions for installing libraries[here](https://alexgyver.ru/arduino-first/#%D0%A3%D1%81%D1%82%D0%B0%D0%BD%D0%BE%D0%B2%D0%BA%D0%B0_%D0%B1%D0%B8%D0%B1%D0%BB%D0%B8%D0%BE%D1%82%D0%B5%D0%BA)
 ### Update
-- I recommend always updating the library: errors and bugs are corrected in the new versions, as well as optimization and new features are added
-- through the IDE library manager: find the library how to install and click "update"
-- Manually: ** remove the folder with the old version **, and then put a new one in its place.“Replacement” cannot be done: sometimes in new versions, files that remain when replacing are deleted and can lead to errors!
+- I recommend always updating the library: new versions fix errors and bugs, as well as optimize and add new features.
+- Through the library manager IDE: find the library as when installing and click "Update"
+- Manually: **Delete the folder with the old version** and then put the new one in its place. “Replacement” can not be done: sometimes new versions delete files that will remain when replaced and can lead to errors!
 
-<a id="feedback"> </a>
+<a id="feedback"></a>
 
-## bugs and feedback
-Create ** Issue ** when you find the bugs, and better immediately write to the mail [alex@alexgyver.ru] (mailto: alex@alexgyver.ru)
-The library is open for refinement and your ** pull Request ** 'ow!
+## Bugs and feedback
+If you find bugs, create **Issue**, or better write to the mail immediately.[alex@alexgyver.ru](mailto:alex@alexgyver.ru)  
+The library is open for revision and your **Pull Requests*!
 
-When reporting about bugs or incorrect work of the library, it is necessary to indicate:
-- The version of the library
-- What is MK used
+When reporting bugs or incorrect work of the library, it is necessary to specify:
+- Library version
+- What is used by the IC
 - SDK version (for ESP)
-- version of Arduino ide
-- whether the built -in examples work correctly, in which the functions and designs are used, leading to a bug in your code
-- what code has been loaded, what work was expected from it and how it works in reality
-- Ideally, attach the minimum code in which the bug is observed.Not a canvas of a thousand lines, but mTonimous code
+- Arduino IDE version
+- Are embedded examples that use features and designs that cause bugs in your code working correctly?
+- What code was downloaded, what work was expected from it and how it works in reality
+- Ideally, attach the minimum code in which the bug is observed. Not a canvas of a thousand lines, but a minimum code.
