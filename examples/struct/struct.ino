@@ -2,7 +2,7 @@
 #include <rtc_utils.h>
 
 struct Data {
-    uint16_t count = 0;  // счётчик перезагрузок
+    uint16_t count;  // счётчик перезагрузок
 };
 
 void setup() {

@@ -27,18 +27,19 @@ esp8266
 ## Use of use
 ```cpp
 // write data to rtc memory. Returns false if you make a mistake
-bool rtc_write(T* data, uint8_t offset = 0);
+bool rtc_write(const T* data, uint8_t offset = 0);
 
 // Read the data from the rtc memory. Returns 0 in error, 1 if the data is read, 2 if it is the first run (data reset)
 uint8_t rtc_read(T* data, uint8_t offset = 0);
 
 // Data size in number of blocks (including crc32)
-size_t rtc_size(T* data);
+size_t rtc_size(const T* data);
 ```
 
-- maximum`offset`- 127, one unit - 4 bytes of memory
+- One `offset` unit is 4 bytes. The whole area must fit: `offset + rtc_size(&data) <= 128`
 - The library adds 4 bytes of crc to the beginning of the area, we take this into account when calculating offsets for other data.
-- You can store any data that has a designer (basic types, classes, structures)
+- Only POD data without pointers or dynamic resources can be stored: basic types and simple structures
+- Data size is automatically padded to 4 bytes when written to RTC
 
 > If you need to store the array - wrap it in a structure!
 
